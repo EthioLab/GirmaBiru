@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Girma Biru</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      background: #0f0f0f;
+      color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99,102,241,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(16,185,129,0.08) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Login ───────────────────────────────── */
+    #login-screen {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 360px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      backdrop-filter: blur(8px);
+    }
+
+    #login-screen h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    #login-screen p {
+      font-size: 0.82rem;
+      color: #666;
+    }
+
+    .field {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .field label {
+      font-size: 0.78rem;
+      color: #888;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="url"] {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 0.65rem 0.9rem;
+      color: #f0f0f0;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus { border-color: rgba(99,102,241,0.6); }
+
+    .error-msg {
+      font-size: 0.82rem;
+      color: #f87171;
+      display: none;
+    }
+
+    .error-msg.show { display: block; }
+
+    /* ── Buttons ─────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1.25rem;
+      border-radius: 10px;
+      border: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.12s;
+    }
+
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; width: 100%; }
+    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+    .btn-ghost   { background: rgba(255,255,255,0.07); color: #ccc; border: 1px solid rgba(255,255,255,0.1); }
+    .btn-danger  { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+    .btn-sm      { padding: 0.35rem 0.7rem; font-size: 0.8rem; border-radius: 7px; }
+
+    /* ── Admin Panel ─────────────────────────── */
+    #admin-panel {
+      display: none;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 600px;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    #admin-panel.active { display: flex; }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .panel-header h1 { font-size: 1.4rem; font-weight: 700; }
+
+    .header-actions { display: flex; gap: 0.5rem; }
+
+    /* Bio field */
+    .section-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .section-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Link rows */
+    .link-row {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 1rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .link-row-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      width: 32px;
+      text-align: center;
+    }
+
+    .link-row-fields {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .link-row-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #ccc;
+    }
+
+    .link-row-url input {
+      width: 100%;
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 11px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle input:checked + .toggle-track { background: #6366f1; }
+
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle input:checked + .toggle-track::after { transform: translateX(18px); }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #10b981;
+      color: #fff;
+      padding: 0.65rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Login Screen ────────────────────────── -->
+  <div id="login-screen">
+    <h1>🔒 Admin Login</h1>
+    <p>Girma Biru · Link Manager</p>
+
+    <div class="field">
+      <label for="u">Username</label>
+      <input id="u" type="text" autocomplete="username" placeholder="Username" />
+    </div>
+
+    <div class="field">
+      <label for="p">Password</label>
+      <input id="p" type="password" autocomplete="current-password" placeholder="Password" />
+    </div>
+
+    <span class="error-msg" id="login-error">Incorrect username or password.</span>
+
+    <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
+  </div>
+
+  <!-- ── Admin Panel ─────────────────────────── -->
+  <div id="admin-panel">
+
+    <div class="panel-header">
+      <h1>Manage Links</h1>
+      <div class="header-actions">
+        <a href="index.html" class="btn btn-ghost btn-sm" target="_blank">Preview ↗</a>
+        <button class="btn btn-danger btn-sm" onclick="doLogout()">Log out</button>
+      </div>
+    </div>
+
+    <!-- Bio -->
+    <div class="section-card">
+      <div class="section-title">Bio / Tagline</div>
+      <div class="field">
+        <input id="bio-input" type="text" placeholder="Short tagline shown under your name…" />
+      </div>
+    </div>
+
+    <!-- Links -->
+    <div class="section-card">
+      <div class="section-title">Links <span style="color:#555;font-weight:400;text-transform:none">— toggle to show/hide</span></div>
+      <div id="link-rows"></div>
+    </div>
+
+    <button class="btn btn-success" onclick="saveAll()">✓ Save Changes</button>
+
+  </div>
+
+  <div id="toast">Changes saved!</div>
+
+  <script>
+    // ── Credentials (basic client-side guard) ──
+    const CREDS = { u: 'GirmaBiru', p: 'Girma838' };
+
+    const DEFAULT_LINKS = [
+      { id: 'linkedin',  label: 'LinkedIn',    icon: '💼', bg: 'rgba(10,102,194,0.25)',  url: '', visible: true },
+      { id: 'twitter',   label: 'Twitter / X', icon: '🐦', bg: 'rgba(29,161,242,0.2)',   url: '', visible: true },
+      { id: 'instagram', label: 'Instagram',   icon: '📸', bg: 'rgba(225,48,108,0.2)',   url: '', visible: true },
+      { id: 'youtube',   label: 'YouTube',     icon: '▶️', bg: 'rgba(255,0,0,0.2)',      url: '', visible: true },
+      { id: 'tiktok',    label: 'TikTok',      icon: '🎵', bg: 'rgba(255,255,255,0.07)', url: '', visible: true },
+      { id: 'github',    label: 'GitHub',      icon: '🐙', bg: 'rgba(255,255,255,0.1)',  url: '', visible: true },
+      { id: 'email',     label: 'Email Me',    icon: '✉️', bg: 'rgba(99,102,241,0.2)',   url: '', visible: true },
+      { id: 'website',   label: 'Website',     icon: '🌐', bg: 'rgba(16,185,129,0.2)',   url: '', visible: true },
+    ];
+
+    // ── Auth ───────────────────────────────────
+    function doLogin() {
+      const u = document.getElementById('u').value;
+      const p = document.getElementById('p').value;
+      if (u === CREDS.u && p === CREDS.p) {
+        sessionStorage.setItem('gb_auth', '1');
+        showPanel();
+      } else {
+        document.getElementById('login-error').classList.add('show');
+      }
+    }
+
+    document.getElementById('p').addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+
+    function doLogout() {
+      sessionStorage.removeItem('gb_auth');
+      location.reload();
+    }
+
+    // ── Panel ──────────────────────────────────
+    function showPanel() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-panel').classList.add('active');
+      renderRows();
+    }
+
+    function getLinks() {
+      const raw = localStorage.getItem('gb_links');
+      return raw ? JSON.parse(raw) : DEFAULT_LINKS.map(l => ({ ...l }));
+    }
+
+    function renderRows() {
+      const links = getLinks();
+      const bio   = localStorage.getItem('gb_bio') || '';
+      document.getElementById('bio-input').value = bio;
+
+      const container = document.getElementById('link-rows');
+      container.innerHTML = '';
+
+      links.forEach((link, i) => {
+        const row = document.createElement('div');
+        row.className = 'link-row';
+        row.innerHTML = `
+          <span class="link-row-icon">${link.icon}</span>
+          <div class="link-row-fields">
+            <div class="link-row-label">${link.label}</div>
+            <div class="link-row-url">
+              <input type="url" data-id="${link.id}" placeholder="https://…" value="${link.url || ''}" />
+            </div>
+          </div>
+          <label class="toggle" title="Show on page">
+            <input type="checkbox" data-toggle="${link.id}" ${link.visible ? 'checked' : ''} />
+            <span class="toggle-track"></span>
+          </label>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function saveAll() {
+      const links = getLinks();
+
+      links.forEach(link => {
+        const urlEl    = document.querySelector(`input[data-id="${link.id}"]`);
+        const toggleEl = document.querySelector(`input[data-toggle="${link.id}"]`);
+        if (urlEl)    link.url     = urlEl.value.trim();
+        if (toggleEl) link.visible = toggleEl.checked;
+      });
+
+      localStorage.setItem('gb_links', JSON.stringify(links));
+      localStorage.setItem('gb_bio', document.getElementById('bio-input').value.trim());
+
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ── Init ───────────────────────────────────
+    if (sessionStorage.getItem('gb_auth') === '1') {
+      showPanel();
+    }
+  </script>
+</body>
+</html>
