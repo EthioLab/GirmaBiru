@@ -6,6 +6,7 @@
   <title>Admin — Girma Biru</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -44,60 +45,41 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1.25rem;
+      gap: 1.5rem;
       backdrop-filter: blur(8px);
+      text-align: center;
     }
 
-    #login-screen h1 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      letter-spacing: -0.4px;
-    }
-
-    #login-screen p {
-      font-size: 0.82rem;
-      color: #666;
-    }
-
-    .field {
-      width: 100%;
+    .login-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #10b981);
       display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
     }
 
-    .field label {
-      font-size: 0.78rem;
-      color: #888;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+    .login-title { font-size: 1.2rem; font-weight: 700; }
+    .login-sub   { font-size: 0.82rem; color: #666; }
 
-    input[type="text"],
-    input[type="password"],
-    input[type="url"] {
-      width: 100%;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      padding: 0.65rem 0.9rem;
-      color: #f0f0f0;
-      font-size: 0.95rem;
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.15s;
-    }
+    #google-btn { min-height: 44px; }
 
-    input:focus { border-color: rgba(99,102,241,0.6); }
-
-    .error-msg {
-      font-size: 0.82rem;
-      color: #f87171;
+    .denied-box {
       display: none;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.84rem;
+      color: #f87171;
+      text-align: center;
+      width: 100%;
     }
-
-    .error-msg.show { display: block; }
 
     /* ── Buttons ─────────────────────────────── */
     .btn {
@@ -118,7 +100,6 @@
     .btn:hover { opacity: 0.88; transform: translateY(-1px); }
     .btn:active { transform: translateY(0); }
 
-    .btn-primary { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; width: 100%; }
     .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
     .btn-ghost   { background: rgba(255,255,255,0.07); color: #ccc; border: 1px solid rgba(255,255,255,0.1); }
     .btn-danger  { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
@@ -145,11 +126,12 @@
       gap: 0.75rem;
     }
 
-    .panel-header h1 { font-size: 1.4rem; font-weight: 700; }
+    .panel-header-left { display: flex; flex-direction: column; gap: 0.2rem; }
+    .panel-header h1   { font-size: 1.4rem; font-weight: 700; }
+    .panel-user        { font-size: 0.78rem; color: #666; }
 
     .header-actions { display: flex; gap: 0.5rem; }
 
-    /* Bio field */
     .section-card {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
@@ -168,6 +150,24 @@
       letter-spacing: 0.5px;
     }
 
+    .field { width: 100%; display: flex; flex-direction: column; gap: 0.35rem; }
+
+    input[type="text"],
+    input[type="url"] {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 0.65rem 0.9rem;
+      color: #f0f0f0;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus { border-color: rgba(99,102,241,0.6); }
+
     /* Link rows */
     .link-row {
       background: rgba(255,255,255,0.04);
@@ -179,38 +179,14 @@
       gap: 0.9rem;
     }
 
-    .link-row-icon {
-      font-size: 1.3rem;
-      flex-shrink: 0;
-      width: 32px;
-      text-align: center;
-    }
+    .link-row-icon { font-size: 1.3rem; flex-shrink: 0; width: 32px; text-align: center; }
 
-    .link-row-fields {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
+    .link-row-fields { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
 
-    .link-row-label {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: #ccc;
-    }
+    .link-row-label { font-size: 0.88rem; font-weight: 600; color: #ccc; }
 
-    .link-row-url input {
-      width: 100%;
-    }
-
-    /* Toggle switch */
-    .toggle {
-      position: relative;
-      width: 40px;
-      height: 22px;
-      flex-shrink: 0;
-    }
-
+    /* Toggle */
+    .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
 
     .toggle-track {
@@ -227,10 +203,8 @@
     .toggle-track::after {
       content: '';
       position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 16px;
-      height: 16px;
+      top: 3px; left: 3px;
+      width: 16px; height: 16px;
       background: #fff;
       border-radius: 50%;
       transition: transform 0.2s;
@@ -256,39 +230,35 @@
       z-index: 999;
     }
 
-    #toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
 
   <!-- ── Login Screen ────────────────────────── -->
   <div id="login-screen">
-    <h1>🔒 Admin Login</h1>
-    <p>Girma Biru · Link Manager</p>
-
-    <div class="field">
-      <label for="u">Username</label>
-      <input id="u" type="text" autocomplete="username" placeholder="Username" />
+    <div class="login-avatar">GB</div>
+    <div>
+      <div class="login-title">Admin Access</div>
+      <div class="login-sub" style="margin-top:0.3rem">Sign in with an authorised Google account</div>
     </div>
 
-    <div class="field">
-      <label for="p">Password</label>
-      <input id="p" type="password" autocomplete="current-password" placeholder="Password" />
+    <div id="google-btn"></div>
+
+    <div class="denied-box" id="denied-box">
+      <strong>Access denied</strong><br />
+      <span id="denied-email"></span> is not on the approved list.
     </div>
-
-    <span class="error-msg" id="login-error">Incorrect username or password.</span>
-
-    <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
   </div>
 
   <!-- ── Admin Panel ─────────────────────────── -->
   <div id="admin-panel">
 
     <div class="panel-header">
-      <h1>Manage Links</h1>
+      <div class="panel-header-left">
+        <h1>Manage Links</h1>
+        <div class="panel-user" id="panel-user"></div>
+      </div>
       <div class="header-actions">
         <a href="index.html" class="btn btn-ghost btn-sm" target="_blank">Preview ↗</a>
         <button class="btn btn-danger btn-sm" onclick="doLogout()">Log out</button>
@@ -316,8 +286,17 @@
   <div id="toast">Changes saved!</div>
 
   <script>
-    // ── Credentials (basic client-side guard) ──
-    const CREDS = { u: 'GirmaBiru', p: 'Girma838' };
+    // ═══════════════════════════════════════════════════════════
+    //  CONFIG — fill these in after completing the Google setup
+    // ═══════════════════════════════════════════════════════════
+    const CLIENT_ID = 'PASTE_YOUR_CLIENT_ID_HERE';
+
+    const ALLOWED_EMAILS = [
+      // Add every Gmail address that should have admin access, e.g.:
+      // 'girma@gmail.com',
+      // 'friend@gmail.com',
+    ];
+    // ═══════════════════════════════════════════════════════════
 
     const DEFAULT_LINKS = [
       { id: 'linkedin',  label: 'LinkedIn',    icon: '💼', bg: 'rgba(10,102,194,0.25)',  url: '', visible: true },
@@ -330,31 +309,60 @@
       { id: 'website',   label: 'Website',     icon: '🌐', bg: 'rgba(16,185,129,0.2)',   url: '', visible: true },
     ];
 
-    // ── Auth ───────────────────────────────────
-    function doLogin() {
-      const u = document.getElementById('u').value;
-      const p = document.getElementById('p').value;
-      if (u === CREDS.u && p === CREDS.p) {
-        sessionStorage.setItem('gb_auth', '1');
-        showPanel();
+    // ── JWT decode (no external lib needed) ──
+    function parseJwt(token) {
+      const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(decodeURIComponent(
+        atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
+      ));
+    }
+
+    // ── Google callback ───────────────────────
+    function handleCredentialResponse(response) {
+      const payload = parseJwt(response.credential);
+      const email   = payload.email.toLowerCase();
+
+      if (ALLOWED_EMAILS.map(e => e.toLowerCase()).includes(email)) {
+        sessionStorage.setItem('gb_auth',  email);
+        sessionStorage.setItem('gb_name',  payload.name || email);
+        showPanel(email, payload.name);
       } else {
-        document.getElementById('login-error').classList.add('show');
+        document.getElementById('denied-email').textContent = email;
+        document.getElementById('denied-box').style.display = 'block';
       }
     }
 
-    document.getElementById('p').addEventListener('keydown', e => {
-      if (e.key === 'Enter') doLogin();
+    // ── Init Google Sign-In ───────────────────
+    window.addEventListener('load', () => {
+      const savedEmail = sessionStorage.getItem('gb_auth');
+      const savedName  = sessionStorage.getItem('gb_name');
+      if (savedEmail) { showPanel(savedEmail, savedName); return; }
+
+      google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback:  handleCredentialResponse,
+        auto_select: false,
+        ux_mode: 'popup',
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById('google-btn'),
+        { theme: 'filled_black', size: 'large', shape: 'pill', width: 280 }
+      );
     });
 
     function doLogout() {
       sessionStorage.removeItem('gb_auth');
+      sessionStorage.removeItem('gb_name');
+      google.accounts.id.disableAutoSelect();
       location.reload();
     }
 
-    // ── Panel ──────────────────────────────────
-    function showPanel() {
+    // ── Admin panel ───────────────────────────
+    function showPanel(email, name) {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('admin-panel').classList.add('active');
+      document.getElementById('panel-user').textContent = 'Signed in as ' + (name || email);
       renderRows();
     }
 
@@ -365,22 +373,19 @@
 
     function renderRows() {
       const links = getLinks();
-      const bio   = localStorage.getItem('gb_bio') || '';
-      document.getElementById('bio-input').value = bio;
+      document.getElementById('bio-input').value = localStorage.getItem('gb_bio') || '';
 
       const container = document.getElementById('link-rows');
       container.innerHTML = '';
 
-      links.forEach((link, i) => {
+      links.forEach(link => {
         const row = document.createElement('div');
         row.className = 'link-row';
         row.innerHTML = `
           <span class="link-row-icon">${link.icon}</span>
           <div class="link-row-fields">
             <div class="link-row-label">${link.label}</div>
-            <div class="link-row-url">
-              <input type="url" data-id="${link.id}" placeholder="https://…" value="${link.url || ''}" />
-            </div>
+            <input type="url" data-id="${link.id}" placeholder="https://…" value="${link.url || ''}" />
           </div>
           <label class="toggle" title="Show on page">
             <input type="checkbox" data-toggle="${link.id}" ${link.visible ? 'checked' : ''} />
@@ -393,25 +398,18 @@
 
     function saveAll() {
       const links = getLinks();
-
       links.forEach(link => {
         const urlEl    = document.querySelector(`input[data-id="${link.id}"]`);
         const toggleEl = document.querySelector(`input[data-toggle="${link.id}"]`);
         if (urlEl)    link.url     = urlEl.value.trim();
         if (toggleEl) link.visible = toggleEl.checked;
       });
-
       localStorage.setItem('gb_links', JSON.stringify(links));
-      localStorage.setItem('gb_bio', document.getElementById('bio-input').value.trim());
+      localStorage.setItem('gb_bio',   document.getElementById('bio-input').value.trim());
 
       const toast = document.getElementById('toast');
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2500);
-    }
-
-    // ── Init ───────────────────────────────────
-    if (sessionStorage.getItem('gb_auth') === '1') {
-      showPanel();
     }
   </script>
 </body>
